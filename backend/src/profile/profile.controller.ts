@@ -94,7 +94,7 @@ export class ProfileController {
           notas: notas.rows[0]?.n ?? 0,
         },
         quickActions: [
-          { label: 'Agendar cita', path: '/citas' },
+          { label: 'Mis citas', path: '/citas' },
           { label: 'Explorar e-books', path: '/ebooks' },
           { label: 'Podcasts', path: '/podcasts' },
           { label: 'Mi diario', path: '/notas' },
