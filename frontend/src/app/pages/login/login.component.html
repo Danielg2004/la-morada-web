@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="card login-card">
+    <h2>Iniciar sesión</h2>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="row">
+        <label>Correo o Cédula</label>
+        <input formControlName="identifier" type="text" />
+        <small *ngIf="f['identifier'].touched && f['identifier'].errors?.['required']">
+          Debes ingresar tu correo o cédula.
+        </small>
+      </div>
+
+      <div class="row">
+        <label>Contraseña</label>
+        <input formControlName="password" type="password" />
+        <small *ngIf="f['password'].touched && f['password'].errors?.['required']">
+          Debes ingresar tu contraseña.
+        </small>
+      </div>
+
+      <div class="server-error" *ngIf="serverError">{{ serverError }}</div>
+
+      <button class="btn" [disabled]="loading" type="submit">Entrar</button>
+    </form>
+
+    <div class="chips">
+      <span class="chip">¿No tienes cuenta?</span>
+      <a class="chip" routerLink="/registro">Regístrate</a>
+    </div>
+  </div>
+</div>

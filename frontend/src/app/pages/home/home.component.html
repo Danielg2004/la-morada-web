@@ -1,0 +1,20 @@
+<div class="home-wrapper">
+  <h2>Hola, {{ nombre }} 👋</h2>
+  <p *ngIf="rol">Tu rol: {{ rol }}</p>
+
+  <section *ngIf="rol === 'paciente' && tipDelDia" class="tip-card">
+    <h3>Tip del día</h3>
+    <p>{{ tipDelDia }}</p>
+  </section>
+
+  <section class="links">
+    <a *ngIf="rol === 'paciente'" routerLink="/citas">Agendar cita</a>
+    <a *ngIf="rol === 'psicologo'" routerLink="/disponibilidad">Mi disponibilidad</a>
+    <a *ngIf="rol === 'admin' || rol === 'psicologo'" routerLink="/ebooks/admin">Subir e-book</a>
+    <a routerLink="/ebooks">Explorar e-books</a>
+    <a routerLink="/podcasts">Podcasts</a>
+    <a routerLink="/perfil">Mi perfil</a>
+    <a routerLink="/blog">Blog</a>
+    <a routerLink="/notas">Mi diario privado</a>
+  </section>
+</div>

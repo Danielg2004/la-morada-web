@@ -1,0 +1,77 @@
+<div class="container">
+  <div class="card" style="max-width: 720px; margin: 24px auto;">
+    <h2>Crear cuenta (rol: paciente)</h2>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="grid grid-2">
+        <div class="row">
+          <label>Nombre *</label>
+          <input formControlName="nombre" type="text" />
+          <small *ngIf="f['nombre'].touched && f['nombre'].errors?.['required']">El nombre es obligatorio.</small>
+        </div>
+
+        <div class="row">
+          <label>Segundo nombre</label>
+          <input formControlName="segundo_nombre" type="text" />
+        </div>
+
+        <div class="row">
+          <label>Apellidos *</label>
+          <input formControlName="apellidos" type="text" />
+          <small *ngIf="f['apellidos'].touched && f['apellidos'].errors?.['required']">Los apellidos son obligatorios.</small>
+        </div>
+
+        <div class="row">
+          <label>Edad *</label>
+          <input formControlName="edad" type="number" />
+          <small *ngIf="f['edad'].touched && f['edad'].errors?.['min']">La edad mínima es 18 años.</small>
+        </div>
+
+        <div class="row">
+          <label>Cédula *</label>
+          <input formControlName="cedula" type="text" />
+          <small *ngIf="f['cedula'].touched && f['cedula'].errors?.['minlength']">
+            La cédula debe tener al menos 6 caracteres.
+          </small>
+        </div>
+
+        <div class="row">
+          <label>Correo *</label>
+          <input formControlName="correo" type="email" />
+          <small *ngIf="f['correo'].touched && f['correo'].errors?.['required']">El correo es obligatorio.</small>
+          <small *ngIf="f['correo'].touched && f['correo'].errors?.['dominio']">
+            El correo debe tener @ y un dominio válido (.com, .co, .org, .net, .edu, .gov).
+          </small>
+        </div>
+      </div>
+
+      <div class="row">
+        <label>Contraseña *</label>
+        <input formControlName="password" type="password" />
+        <ng-container *ngIf="f['password'].touched && f['password'].errors">
+          <small *ngIf="f['password'].errors?.['minLength']">Mínimo 8 caracteres.</small>
+          <small *ngIf="f['password'].errors?.['lowercase']">Al menos una minúscula.</small>
+          <small *ngIf="f['password'].errors?.['uppercase']">Al menos una mayúscula.</small>
+          <small *ngIf="f['password'].errors?.['number']">Al menos un número.</small>
+          <small *ngIf="f['password'].errors?.['special']">Al menos un carácter especial.</small>
+        </ng-container>
+      </div>
+
+      <div class="row">
+        <label>Confirmar contraseña *</label>
+        <input formControlName="confirmPassword" type="password" />
+        <small *ngIf="form.touched && form.errors?.['mismatch']">Las contraseñas no coinciden.</small>
+      </div>
+
+      <div class="server-error" *ngIf="serverError">{{ serverError }}</div>
+
+      <button class="btn" [disabled]="loading" type="submit">Crear cuenta</button>
+    </form>
+
+    <div class="chips">
+      <span class="chip">¿Ya tienes cuenta?</span>
+      <a class="chip" routerLink="/login">Inicia sesión</a>
+    </div>
+  </div>
+</div>
