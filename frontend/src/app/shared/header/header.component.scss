@@ -1,0 +1,29 @@
+.lm-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(15,15,20,.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px;
+}
+.brand {
+  display:flex; align-items:center; gap:10px; color:#fff; text-decoration:none; font-weight:700;
+  .logo-dot { width: 10px; height: 10px; border-radius:999px; background: var(--accent); display:inline-block; }
+  .brand-text { letter-spacing:.3px; }
+}
+.nav {
+  display:flex; gap: 12px;
+  a { color:#e8eef6; text-decoration:none; padding:8px 10px; border-radius:8px; }
+  a.active, a:hover { background:#171a22; }
+}
+.session {
+  display:flex; gap: 8px; align-items:center;
+  .whoami { color:#9fb0c3; font-size:.9rem; }
+  .btn, .btn-outline {
+    border-radius: 10px; padding: 8px 12px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block;
+  }
+  .btn { background: var(--accent); color:#fff; border:0; }
+  .btn-outline { background: transparent; border:1px solid #2a2f3a; color:#e8eef6; }
+}

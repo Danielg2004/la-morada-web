@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="card">
+    <h2>Subir e-book</h2>
+    <p class="muted">Solo psicólogos o administradores.</p>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="grid grid-2">
+        <div class="row">
+          <label>Título *</label>
+          <input formControlName="titulo" type="text" />
+          <small *ngIf="form.touched && form.controls['titulo'].errors?.['required']">Obligatorio</small>
+        </div>
+        <div class="row">
+          <label>Imagen (URL)</label>
+          <input formControlName="imagen_url" type="url" placeholder="https://..." />
+        </div>
+        <div class="row">
+          <label>Archivo (URL)</label>
+          <input formControlName="archivo_url" type="url" placeholder="https://..." />
+        </div>
+        <div class="row">
+          <label>Descripción</label>
+          <input formControlName="descripcion" type="text" />
+        </div>
+      </div>
+
+      <div class="server-error" *ngIf="serverError">{{ serverError }}</div>
+      <button class="btn" type="submit">Crear</button>
+      <a class="btn outline" routerLink="/ebooks">Volver</a>
+    </form>
+  </div>
+</div>

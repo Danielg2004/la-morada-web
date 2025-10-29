@@ -4,22 +4,24 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    // Deja Passport con estrategia por defecto jwt (opcional pero recomendado)
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      // 👇 forzamos el tipo para que TS no se queje
       signOptions: {
+        // Nest types piden string | number; tu env es string, está OK
         expiresIn: (process.env.JWT_EXPIRES || '1d') as any,
       },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy], // <-- REGISTRA LA ESTRATEGIA AQUÍ
+  exports: [AuthService, PassportModule], // <-- exporta por si otros módulos lo usan
 })
 export class AuthModule {}

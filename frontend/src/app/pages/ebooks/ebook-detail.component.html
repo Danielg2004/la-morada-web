@@ -1,0 +1,20 @@
+<div class="container" *ngIf="ebook">
+  <div class="card">
+    <div class="detail">
+      <div class="left">
+        <img *ngIf="ebook.imagen_url" [src]="ebook.imagen_url" [alt]="ebook.titulo" />
+        <div class="placeholder" *ngIf="!ebook.imagen_url">{{ ebook.titulo | slice:0:1 }}</div>
+      </div>
+      <div class="right">
+        <h2>{{ ebook.titulo }}</h2>
+        <div class="muted">Autor: {{ ebook.autor_nombre || '—' }}</div>
+        <p class="desc" *ngIf="ebook.descripcion">{{ ebook.descripcion }}</p>
+        <div class="row">
+          <button class="btn" (click)="openLink(ebook.archivo_url)" [disabled]="!ebook.archivo_url">Abrir archivo</button>
+          <button class="btn outline" (click)="openLink(ebook.imagen_url)" [disabled]="!ebook.imagen_url">Ver imagen</button>
+          <button *ngIf="canDelete()" class="btn danger" (click)="delete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

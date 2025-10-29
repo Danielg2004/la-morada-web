@@ -1,0 +1,21 @@
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;
+  .actions { display: flex; gap: 8px; align-items: center; }
+  input {
+    background: #0e1117; color: #e8eef6; border:1px solid #2a2f3a; border-radius:10px; padding:10px 12px; width: 320px;
+  }
+  .btn.outline { background: transparent; border:1px solid #2a2f3a; }
+}
+.grid {
+  display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.ebook {
+  background: var(--card); border:1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 12px; display:flex; flex-direction: column; gap:8px;
+  .thumb {
+    display:block; width:100%; aspect-ratio: 16/10; background:#0e1117; border:1px solid #2a2f3a; border-radius:12px; overflow:hidden;
+    img { width:100%; height:100%; object-fit: cover; display:block; }
+    .placeholder { display:grid; place-items:center; height:100%; font-weight:700; font-size:24px; color:#9fb0c3; }
+  }
+  .meta { .title { font-weight:700; color:#fff; } .author { color:#9fb0c3; font-size: .85rem; } }
+  .row-actions { display:flex; gap:6px; .chip { @extend .chip; cursor:pointer; } }
+}

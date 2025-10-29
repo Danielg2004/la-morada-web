@@ -1,0 +1,13 @@
+.lm-footer {
+  margin-top: 32px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  background: #0f0f14;
+}
+.footer-inner {
+  display:flex; align-items:center; justify-content:space-between; gap: 12px;
+  padding: 18px 16px; color:#9fb0c3; font-size:.9rem;
+  nav { display:flex; gap: 12px;
+    a { color:#9fb0c3; text-decoration:none; }
+    a:hover { color:#e8eef6; }
+  }
+}

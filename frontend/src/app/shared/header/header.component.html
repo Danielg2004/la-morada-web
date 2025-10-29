@@ -1,0 +1,25 @@
+<header class="lm-header">
+  <div class="container header-inner">
+    <a class="brand" routerLink="/home">
+      <span class="logo-dot"></span>
+      <span class="brand-text">La Morada</span>
+    </a>
+
+    <nav class="nav">
+      <a routerLink="/home" routerLinkActive="active">Home</a>
+      <a routerLink="/ebooks" routerLinkActive="active">E-books</a>
+      <a *ngIf="isAdminOrPsy" routerLink="/ebooks/admin" routerLinkActive="active">Subir e-book</a>
+    </nav>
+
+    <div class="session">
+      <ng-container *ngIf="isLogged; else authLinks">
+        <span class="whoami" title="Rol">{{ user?.nombre }} · {{ user?.rol }}</span>
+        <button class="btn-outline" (click)="logout()">Cerrar sesión</button>
+      </ng-container>
+      <ng-template #authLinks>
+        <a class="btn-outline" routerLink="/login">Iniciar sesión</a>
+        <a class="btn" routerLink="/registro">Registrarse</a>
+      </ng-template>
+    </div>
+  </div>
+</header>

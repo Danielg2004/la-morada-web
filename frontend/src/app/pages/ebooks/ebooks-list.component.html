@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <h2>E-books</h2>
+      <div class="actions">
+        <input [(ngModel)]="q" (keyup.enter)="search()" placeholder="Buscar por título o descripción..." />
+        <button class="btn" (click)="search()">Buscar</button>
+        <button class="btn outline" (click)="toggleFavorites()">
+          {{ showOnlyFavorites ? 'Ver todos' : 'Ver mis favoritos' }}
+        </button>
+        <a *ngIf="canCreate()" class="btn" routerLink="/ebooks/admin">Subir e-book</a>
+      </div>
+    </div>
+
+    <div *ngIf="loading">Cargando...</div>
+
+    <div class="grid">
+      <div class="ebook" *ngFor="let e of ebooks">
+        <a class="thumb" [routerLink]="['/ebooks', e.id]">
+          <img *ngIf="e.imagen_url" [src]="e.imagen_url" [alt]="e.titulo" />
+          <div class="placeholder" *ngIf="!e.imagen_url">{{ e.titulo | slice:0:1 }}</div>
+        </a>
+        <div class="meta">
+          <a [routerLink]="['/ebooks', e.id]" class="title">{{ e.titulo }}</a>
+          <div class="author">{{ e.autor_nombre || '—' }}</div>
+        </div>
+        <div class="row-actions">
+          <button class="chip" (click)="share(e)">Compartir</button>
+          <button class="chip" (click)="toggleFav(e)">{{ e.es_favorito ? 'Quitar ★' : 'Fav ★' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
