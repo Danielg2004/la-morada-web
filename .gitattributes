@@ -1,0 +1,6 @@
+*.ts text=auto
+*.js text=auto
+*.json text=auto
+*.scss text=auto
+*.html text=auto
+*.md text=auto
