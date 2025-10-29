@@ -1,0 +1,24 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding: 8px;
+  }
+}
+.actions { display: flex; gap: 8px; }
+.btn.danger { background: #ef4444; }
+.btn.success { background: #22c55e; }
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: .8rem;
+  background: #2a2f3d;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.badge-green { background: #11351e; border-color: #1f8f4d; color: #b7ffd3; }
+.badge-red   { background: #3a1414; border-color: #b53a3a; color: #ffc0c0; }
+.badge-blue  { background: #16273c; border-color: #325d9b; color: #cfe6ff; }

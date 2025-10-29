@@ -20,6 +20,11 @@ import { PodcastsListComponent } from './pages/podcasts/podcasts-list.component'
 import { PodcastAdminComponent } from './pages/podcasts/podcast-admin.component';
 import { PodcastDetailComponent } from './pages/podcasts/podcast-detail.component';
 
+// Citas con psicólogos
+import { DisponibilidadPsicologoComponent } from './pages/citas/disponibilidad-psicologo.component';
+import { ReservarCitaComponent } from './pages/citas/reservar-cita.component';
+import { MisCitasComponent } from './pages/citas/mis-citas.component';
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
@@ -44,4 +49,11 @@ export const routes: Routes = [
   { path: 'podcasts', component: PodcastsListComponent },
   { path: 'podcasts/admin', component: PodcastAdminComponent },
   { path: 'podcasts/:id', component: PodcastDetailComponent },
+
+  // Citas con psicólogos
+  { path: 'disponibilidad', component: DisponibilidadPsicologoComponent }, // psicólogo
+  { path: 'citas/reservar', component: ReservarCitaComponent },            // paciente
+  { path: 'citas', component: MisCitasComponent },                         // ambos
+
+  { path: '**', redirectTo: 'home' }
 ];

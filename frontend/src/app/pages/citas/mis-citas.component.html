@@ -1,0 +1,55 @@
+<div class="container card">
+  <h2>Mis citas</h2>
+  <div *ngIf="loading">Cargando...</div>
+
+  <table *ngIf="!loading" class="table">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th *ngIf="rol==='paciente' || rol==='admin'">Psicólogo</th>
+        <th *ngIf="rol==='psicologo' || rol==='admin'">Paciente</th>
+        <th>Estado</th>
+        <th style="width:220px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of citas">
+        <td>{{ c.fecha | date:'yyyy-MM-dd' }}</td>
+        <td>{{ c.hora }}</td>
+
+        <td *ngIf="rol==='paciente' || rol==='admin'">
+          {{ (c.psicologo_nombre || '') + ' ' + (c.psicologo_apellidos || '') }}
+        </td>
+
+        <td *ngIf="rol==='psicologo' || rol==='admin'">
+          {{ (c.paciente_nombre || '') + ' ' + (c.paciente_apellidos || '') }}
+        </td>
+
+        <td>
+          <span class="badge"
+                [class.badge-green]="c.estado==='completada'"
+                [class.badge-red]="c.estado==='cancelada'"
+                [class.badge-blue]="c.estado==='reservada'">
+            {{ c.estado === 'completada' ? 'realizada' : c.estado }}
+          </span>
+        </td>
+
+        <td class="actions">
+          <button class="btn danger"
+                  (click)="cancelar(c)"
+                  [disabled]="c.estado!=='reservada'">
+            Cancelar
+          </button>
+
+          <button class="btn success"
+                  *ngIf="rol==='psicologo' || rol==='admin'"
+                  (click)="completar(c)"
+                  [disabled]="c.estado!=='reservada'">
+            Marcar realizada
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,42 @@
+<div class="container card">
+  <h2>Mi disponibilidad</h2>
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="row">
+      <label>Fecha *</label>
+      <input type="date" formControlName="fecha" />
+    </div>
+
+    <div class="row">
+      <label>Horas *</label>
+      <div class="hours" formArrayName="horas">
+        <label *ngFor="let h of horasCatalogo; let i = index" class="chip">
+          <input type="checkbox" [formControlName]="i" />
+          <span>{{ h }}</span>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn" type="submit">Agregar</button>
+  </form>
+
+  <div class="filters">
+    <input type="date" [(ngModel)]="rango.from" placeholder="Desde" />
+    <input type="date" [(ngModel)]="rango.to" placeholder="Hasta" />
+    <button class="btn outline" (click)="load()">Filtrar</button>
+  </div>
+
+  <div *ngIf="loading">Cargando...</div>
+
+  <table *ngIf="!loading" class="table">
+    <thead><tr><th>Fecha</th><th>Hora</th><th>Disponible</th><th></th></tr></thead>
+    <tbody>
+      <tr *ngFor="let s of slots">
+        <td>{{ s.fecha | date:'yyyy-MM-dd' }}</td>
+        <td>{{ s.hora }}</td>
+        <td>{{ s.disponible ? 'Sí' : 'No' }}</td>
+        <td><button class="btn danger" (click)="del(s.id)" [disabled]="!s.disponible">Eliminar</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

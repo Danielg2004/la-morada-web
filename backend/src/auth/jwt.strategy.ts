@@ -3,19 +3,20 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       secretOrKey: process.env.JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
     });
   }
 
   async validate(payload: any) {
-    // Debe reflejar EXACTAMENTE lo que firmas en AuthService (userId, rol, nombre)
+    // payload se firma en AuthService con { userId, rol, nombre }
+    // Algunos setups usan `sub`; aquí soportamos ambos por seguridad.
+    const userId = payload.userId || payload.sub;
     return {
-      userId: payload.userId,
+      userId,
       rol: payload.rol,
       nombre: payload.nombre,
     };

@@ -1,0 +1,29 @@
+<div class="container card">
+  <h2>Reservar cita</h2>
+
+  <div class="grid">
+    <div class="row">
+      <label>Psicólogo *</label>
+      <select [(ngModel)]="psicologoId" (change)="loadHoras()">
+        <option value="">-- Selecciona --</option>
+        <option *ngFor="let p of psicologos" [value]="p.id">{{ p.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label>Fecha *</label>
+      <input type="date" [(ngModel)]="fecha" (change)="loadHoras()" />
+    </div>
+
+    <div class="row">
+      <label>Hora *</label>
+      <select [(ngModel)]="hora">
+        <option value="">-- Selecciona --</option>
+        <option *ngFor="let h of horas" [value]="h.hora">{{ h.hora }}</option>
+      </select>
+      <small *ngIf="psicologoId && fecha && horas.length === 0">No hay disponibilidad para ese día.</small>
+    </div>
+  </div>
+
+  <button class="btn" (click)="reservar()" [disabled]="loading">Reservar</button>
+</div>

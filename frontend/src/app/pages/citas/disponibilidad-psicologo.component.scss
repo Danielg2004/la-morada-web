@@ -1,0 +1,11 @@
+.card { padding: 16px; }
+.hours { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;
+  .chip { display:flex; align-items:center; gap:6px; background:#0e1117; border:1px solid #2a2f3a; padding:6px 10px; border-radius:999px; }
+}
+.filters { display:flex; gap:8px; margin:12px 0; align-items:center;
+  .btn.outline{ background:transparent; border:1px solid #2a2f3a; }
+}
+.table { width:100%; border-collapse: collapse;
+  th, td { border-bottom:1px solid rgba(255,255,255,.06); padding:8px; }
+}
+.btn.danger{ background:#ef4444; }

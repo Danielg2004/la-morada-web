@@ -11,6 +11,10 @@
       <a routerLink="/podcasts" routerLinkActive="active">Podcasts</a>
       <a *ngIf="isAdminOrPsy" routerLink="/podcasts/admin" routerLinkActive="active">Subir podcast</a>
       <a *ngIf="isAdminOrPsy" routerLink="/ebooks/admin" routerLinkActive="active">Subir e-book</a>
+      <a routerLink="/citas" routerLinkActive="active">Mis citas</a>
+      <a *ngIf="isAdminOrPsy" routerLink="/disponibilidad" routerLinkActive="active">Mi disponibilidad</a>
+      <a *ngIf="user?.rol==='paciente'" routerLink="/citas/reservar" routerLinkActive="active">Reservar</a>
+
     </nav>
 
     <div class="session">

@@ -7,6 +7,8 @@ import { EbooksModule } from './ebooks/ebooks.module';
 import { BlogModule } from './blog/blog.module';
 import { NotesModule } from './notes/notes.module';
 import { PodcastsModule } from './podcasts/podcasts.module';
+import { DisponibilidadesModule } from './disponibilidades/disponibilidades.module';
+import { CitasModule } from './citas/citas.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { PodcastsModule } from './podcasts/podcasts.module';
     BlogModule,  // <- nuevo
     NotesModule,
     PodcastsModule, // <- nuevo
+    DisponibilidadesModule,
+    CitasModule,
   ],
 })
 export class AppModule {}
