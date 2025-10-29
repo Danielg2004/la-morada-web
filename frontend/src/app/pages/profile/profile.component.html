@@ -1,0 +1,88 @@
+<div class="container">
+  <div class="card profile-card" *ngIf="!loading && data as d">
+    <div class="profile-header">
+      <div class="avatar">{{ d.me.nombre[0] | uppercase }}</div>
+      <div>
+        <h2>{{ fullName() }}</h2>
+        <p class="muted">Rol: <strong>{{ d.rol }}</strong> ·
+          Miembro desde: {{ d.me.creado_en | date:'yyyy-MM-dd' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      <!-- Widgets por rol -->
+      <ng-container [ngSwitch]="d.rol">
+
+        <!-- Paciente -->
+        <div *ngSwitchCase="'paciente'" class="stat">
+          <h4>Citas</h4>
+          <p>Total: {{ d.widgets?.citas?.total || 0 }}</p>
+          <p>Próximas: {{ d.widgets?.citas?.proximas || 0 }}</p>
+          <p>Realizadas: {{ d.widgets?.citas?.completadas || 0 }}</p>
+          <p>Canceladas: {{ d.widgets?.citas?.canceladas || 0 }}</p>
+        </div>
+        <div *ngSwitchCase="'paciente'" class="stat">
+          <h4>Favoritos</h4>
+          <p>E-books: {{ d.widgets?.favoritos?.ebooks || 0 }}</p>
+          <p>Podcasts: {{ d.widgets?.favoritos?.podcasts || 0 }}</p>
+        </div>
+        <div *ngSwitchCase="'paciente'" class="stat">
+          <h4>Notas privadas</h4>
+          <p>Total: {{ d.widgets?.notas || 0 }}</p>
+        </div>
+
+        <!-- Psicólogo -->
+        <div *ngSwitchCase="'psicologo'" class="stat">
+          <h4>Citas</h4>
+          <p>Total: {{ d.widgets?.citas?.total || 0 }}</p>
+          <p>Próximas: {{ d.widgets?.citas?.proximas || 0 }}</p>
+          <p>Realizadas: {{ d.widgets?.citas?.completadas || 0 }}</p>
+          <p>Canceladas: {{ d.widgets?.citas?.canceladas || 0 }}</p>
+        </div>
+        <div *ngSwitchCase="'psicologo'" class="stat">
+          <h4>Disponibilidad</h4>
+          <p>Slots futuros: {{ d.widgets?.disponibilidades_futuras || 0 }}</p>
+        </div>
+        <div *ngSwitchCase="'psicologo'" class="stat">
+          <h4>Contenido</h4>
+          <p>E-books: {{ d.widgets?.contenidos_publicados?.ebooks || 0 }}</p>
+          <p>Posts: {{ d.widgets?.contenidos_publicados?.posts || 0 }}</p>
+          <p>Podcasts: {{ d.widgets?.contenidos_publicados?.podcasts || 0 }}</p>
+        </div>
+
+        <!-- Admin -->
+        <div *ngSwitchCase="'admin'" class="stat">
+          <h4>Citas (global)</h4>
+          <p>Total: {{ d.widgets?.citas?.total || 0 }}</p>
+          <p>Próximas: {{ d.widgets?.citas?.proximas || 0 }}</p>
+          <p>Realizadas: {{ d.widgets?.citas?.completadas || 0 }}</p>
+          <p>Canceladas: {{ d.widgets?.citas?.canceladas || 0 }}</p>
+        </div>
+        <div *ngSwitchCase="'admin'" class="stat">
+          <h4>Usuarios</h4>
+          <p>Total: {{ d.widgets?.usuarios?.total || 0 }}</p>
+          <p>Pacientes: {{ d.widgets?.usuarios?.pacientes || 0 }}</p>
+          <p>Psicólogos: {{ d.widgets?.usuarios?.psicologos || 0 }}</p>
+          <p>Admins: {{ d.widgets?.usuarios?.admins || 0 }}</p>
+        </div>
+        <div *ngSwitchCase="'admin'" class="stat">
+          <h4>Contenido</h4>
+          <p>E-books: {{ d.widgets?.contenidos?.ebooks || 0 }}</p>
+          <p>Posts: {{ d.widgets?.contenidos?.posts || 0 }}</p>
+          <p>Podcasts: {{ d.widgets?.contenidos?.podcasts || 0 }}</p>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <div class="quick">
+      <h3>Accesos rápidos</h3>
+      <div class="links">
+        <a *ngFor="let a of d.quickActions" [routerLink]="a.path" class="pill">{{ a.label }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="loading">Cargando perfil…</div>
+</div>

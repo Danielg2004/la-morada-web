@@ -25,6 +25,9 @@ import { DisponibilidadPsicologoComponent } from './pages/citas/disponibilidad-p
 import { ReservarCitaComponent } from './pages/citas/reservar-cita.component';
 import { MisCitasComponent } from './pages/citas/mis-citas.component';
 
+// Perfil
+import { ProfileComponent } from './pages/profile/profile.component';
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
@@ -54,6 +57,9 @@ export const routes: Routes = [
   { path: 'disponibilidad', component: DisponibilidadPsicologoComponent }, // psicólogo
   { path: 'citas/reservar', component: ReservarCitaComponent },            // paciente
   { path: 'citas', component: MisCitasComponent },                         // ambos
+
+  // Perfil
+  { path: 'perfil', component: ProfileComponent },
 
   { path: '**', redirectTo: 'home' }
 ];

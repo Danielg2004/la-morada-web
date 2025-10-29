@@ -1,0 +1,52 @@
+.profile-card {
+  background: #1f1f2e;
+  color: #fff;
+}
+
+.profile-header {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .avatar {
+    width: 48px; height: 48px;
+    border-radius: 999px;
+    background: linear-gradient(90deg,#6a4dfd,#9d6bff);
+    display: grid; place-items: center;
+    font-weight: 800;
+  }
+
+  .muted { color: #9fb0c3; font-size: .9rem; }
+}
+
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid { display: grid; gap: 12px; }
+
+.stat {
+  background: #2a2a3d;
+  border-radius: .8rem;
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+
+  h4 { margin: 0 0 6px; color: #9d6bff; }
+  p  { margin: 4px 0; }
+}
+
+.quick {
+  margin-top: 18px;
+  .links {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .pill {
+    background: #2a2a3d;
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: #fff; text-decoration: none;
+  }
+}
+
+@media (max-width: 720px){
+  .grid-3 { grid-template-columns: 1fr; }
+}
