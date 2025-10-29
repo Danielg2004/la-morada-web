@@ -15,6 +15,11 @@ import { BlogDetailComponent } from './pages/blog/blog-detail.component';
 import { NotesListComponent } from './pages/notes/notes-list.component';
 import { NoteEditComponent } from './pages/notes/note-edit.component';
 
+// Podcasts
+import { PodcastsListComponent } from './pages/podcasts/podcasts-list.component';
+import { PodcastAdminComponent } from './pages/podcasts/podcast-admin.component';
+import { PodcastDetailComponent } from './pages/podcasts/podcast-detail.component';
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
@@ -34,4 +39,9 @@ export const routes: Routes = [
   // Notas privadas
   { path: 'notas', component: NotesListComponent },
   { path: 'notas/:id', component: NoteEditComponent },
+
+  // Podcasts
+  { path: 'podcasts', component: PodcastsListComponent },
+  { path: 'podcasts/admin', component: PodcastAdminComponent },
+  { path: 'podcasts/:id', component: PodcastDetailComponent },
 ];

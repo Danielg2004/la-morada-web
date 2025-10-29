@@ -8,6 +8,8 @@
     <nav class="nav">
       <a routerLink="/home" routerLinkActive="active">Home</a>
       <a routerLink="/ebooks" routerLinkActive="active">E-books</a>
+      <a routerLink="/podcasts" routerLinkActive="active">Podcasts</a>
+      <a *ngIf="isAdminOrPsy" routerLink="/podcasts/admin" routerLinkActive="active">Subir podcast</a>
       <a *ngIf="isAdminOrPsy" routerLink="/ebooks/admin" routerLinkActive="active">Subir e-book</a>
     </nav>
 

@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { EbooksModule } from './ebooks/ebooks.module';
 import { BlogModule } from './blog/blog.module';
 import { NotesModule } from './notes/notes.module';
+import { PodcastsModule } from './podcasts/podcasts.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { NotesModule } from './notes/notes.module';
     AuthModule,
     EbooksModule,
     BlogModule,  // <- nuevo
-    NotesModule, // <- nuevo
+    NotesModule,
+    PodcastsModule, // <- nuevo
   ],
 })
 export class AppModule {}

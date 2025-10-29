@@ -1,0 +1,28 @@
+<div class="container" *ngIf="p">
+  <div class="card">
+    <h2>{{ p.titulo }}</h2>
+    <div class="muted">por {{ p.autor_nombre || '—' }} · {{ p.creado_en | date:'medium' }}</div>
+    <p class="desc">{{ p.descripcion }}</p>
+
+    <div class="embed-wrap">
+      <iframe [src]="p.embed_url | safeUrl" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div class="actions">
+      <button class="btn outline" (click)="toggleFav()">{{ p.es_favorito ? 'Quitar favorito' : 'Favorito' }}</button>
+      <a class="btn outline" routerLink="/podcasts">Volver</a>
+      <button class="btn danger" *ngIf="canManage()" (click)="remove()">Eliminar</button>
+    </div>
+
+    <div class="progress">
+      <h3>Progreso</h3>
+      <div class="row">
+        <label>Segundos escuchados:</label>
+        <input type="number" [(ngModel)]="segundos" min="0" />
+        <button class="btn outline" (click)="minus30()">-30s</button>
+        <button class="btn outline" (click)="plus30()">+30s</button>
+        <button class="btn" (click)="saveProgress()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

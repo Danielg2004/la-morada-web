@@ -1,0 +1,33 @@
+    <div class="container">
+  <div class="card">
+    <div class="header">
+      <h2>Podcasts</h2>
+      <div class="actions">
+        <input [(ngModel)]="q" (keyup.enter)="search()" placeholder="Buscar podcasts..." />
+        <button class="btn" (click)="search()">Buscar</button>
+        <button class="btn outline" (click)="toggleFavorites()">
+          {{ showOnlyFavorites ? 'Ver todos' : 'Solo favoritos' }}
+        </button>
+        <a class="btn" *ngIf="canCreate()" routerLink="/podcasts/admin">Nuevo podcast</a>
+      </div>
+    </div>
+
+    <div *ngIf="loading">Cargando...</div>
+
+    <div class="grid">
+      <div class="pod" *ngFor="let p of podcasts">
+        <h3><a [routerLink]="['/podcasts', p.id]">{{ p.titulo }}</a></h3>
+        <div class="meta">por {{ p.autor_nombre || '—' }} · {{ p.creado_en | date:'medium' }}</div>
+        <p class="desc">{{ p.descripcion }}</p>
+        <div class="embed-wrap">
+          <iframe [src]="p.embed_url | safeUrl" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="actions">
+          <button class="btn outline" (click)="toggleFav(p)">{{ p.es_favorito ? 'Quitar favorito' : 'Favorito' }}</button>
+          <button class="btn outline" (click)="share(p)">Compartir</button>
+          <a class="btn" [routerLink]="['/podcasts', p.id]">Abrir</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

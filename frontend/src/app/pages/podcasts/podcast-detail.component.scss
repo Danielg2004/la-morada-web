@@ -1,0 +1,10 @@
+.muted{ color:#9fb0c3; margin:8px 0 16px; }
+.desc{ color:#c7d4e4; }
+.embed-wrap { margin: 8px 0 16px;
+  iframe { width:100%; min-height: 180px; border-radius: 10px; }
+}
+.actions{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 12px; }
+.btn.outline{ background:transparent; border:1px solid #2a2f3a; }
+.btn.danger{ background:#ef4444; }
+.progress .row{ display:flex; gap:8px; align-items:center; }
+input[type=number]{ width:120px; background:#0e1117; color:#e8eef6; border:1px solid #2a2f3a; border-radius:10px; padding:10px 12px; }
