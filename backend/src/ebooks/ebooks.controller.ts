@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query, Req, UseGuards } from '@nestjs/common';
 import { EbooksService } from './ebooks.service';
 import { CreateEbookDto } from './dto/create-ebook.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -7,71 +7,65 @@ import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('ebooks')
 export class EbooksController {
-  constructor(private ebooks: EbooksService) {}
+  constructor(private readonly svc: EbooksService) {}
 
-  // Público: listar con búsqueda/paginación
+  // GET /ebooks?q=...
   @Get()
-  async list(
-    @Query('q') q?: string,
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-    @Req() req?: any,
-  ) {
-    const currentUserId = req?.user?.userId ?? null; // puede venir vacío (público)
-    return this.ebooks.list({
-      q,
-      limit: limit ? Number(limit) : 20,
-      offset: offset ? Number(offset) : 0,
-      favoriteOf: null, // para "mis favoritos" hay otra ruta
-    });
+  async list(@Req() req: any, @Query('q') q?: string) {
+    const uid = req.user?.userId ?? null; // público o autenticado
+    return this.svc.list(uid, q);
   }
 
-  // Público: detalle
+  // GET /ebooks/:id
   @Get(':id')
-  async detail(@Param('id') id: string, @Req() req: any) {
-    const currentUserId = req?.user?.userId ?? null;
-    return this.ebooks.detail(id, currentUserId);
+  async detail(@Req() req: any, @Param('id') id: string) {
+    const uid = req.user?.userId ?? null;
+    return this.svc.detail(uid, id);
   }
 
-  // Admin/Psicologo: crear
+  // NUEVO: GET /ebooks/:id/access (requiere auth)
+  @Get(':id/access')
+  @UseGuards(JwtAuthGuard)
+  async access(@Req() req: any, @Param('id') id: string) {
+    const ok = await this.svc.hasAccess(req.user.userId, id);
+    return { hasAccess: ok };
+  }
+
+  // POST /ebooks (admin|psicologo)
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'psicologo')
-  async create(@Body() dto: CreateEbookDto, @Req() req: any) {
-    return this.ebooks.create(dto, req.user.userId);
+  async create(@Req() req: any, @Body() body: CreateEbookDto) {
+    const user = { id: req.user.userId, rol: req.user.rol };
+    return this.svc.create(user, body);
   }
 
-  // Admin/Psicologo: eliminar
+  // DELETE /ebooks/:id (admin o autor)
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'psicologo')
-  async remove(@Param('id') id: string) {
-    return this.ebooks.remove(id);
+  @UseGuards(JwtAuthGuard)
+  async remove(@Req() req: any, @Param('id') id: string) {
+    const user = { id: req.user.userId, rol: req.user.rol };
+    return this.svc.remove(user, id);
   }
 
-  // Autenticado: agregar favorito
+  // POST /ebooks/:id/favorite
   @Post(':id/favorite')
   @UseGuards(JwtAuthGuard)
-  async addFav(@Param('id') id: string, @Req() req: any) {
-    return this.ebooks.addFavorite(id, req.user.userId);
+  async addFavorite(@Req() req: any, @Param('id') id: string) {
+    return this.svc.addFavorite(req.user.userId, id);
   }
 
-  // Autenticado: quitar favorito
+  // DELETE /ebooks/:id/favorite
   @Delete(':id/favorite')
   @UseGuards(JwtAuthGuard)
-  async delFav(@Param('id') id: string, @Req() req: any) {
-    return this.ebooks.removeFavorite(id, req.user.userId);
+  async removeFavorite(@Req() req: any, @Param('id') id: string) {
+    return this.svc.removeFavorite(req.user.userId, id);
   }
 
-  // Autenticado: listar SOLO mis favoritos
+  // GET /ebooks/me/favorites/list?q=...
   @Get('me/favorites/list')
   @UseGuards(JwtAuthGuard)
-  async myFavs(@Req() req: any, @Query('q') q?: string, @Query('limit') limit?: string, @Query('offset') offset?: string) {
-    return this.ebooks.list({
-      q,
-      limit: limit ? Number(limit) : 20,
-      offset: offset ? Number(offset) : 0,
-      favoriteOf: req.user.userId,
-    });
+  async myFavorites(@Req() req: any, @Query('q') q?: string) {
+    return this.svc.listMyFavorites(req.user.userId, q);
   }
 }

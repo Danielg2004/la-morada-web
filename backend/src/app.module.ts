@@ -10,6 +10,9 @@ import { PodcastsModule } from './podcasts/podcasts.module';
 import { DisponibilidadesModule } from './disponibilidades/disponibilidades.module';
 import { CitasModule } from './citas/citas.module';
 import { ProfileModule } from './profile/profile.module';
+import { CartModule } from './cart/cart.module';
+import { OrdersModule } from './orders/orders.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { ProfileModule } from './profile/profile.module';
     DisponibilidadesModule,
     CitasModule,
     ProfileModule,
+    CartModule,
+    OrdersModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}

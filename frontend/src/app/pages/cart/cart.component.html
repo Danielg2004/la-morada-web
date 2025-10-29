@@ -1,0 +1,38 @@
+<div class="container card" *ngIf="cart as c">
+  <h2>Tu carrito</h2>
+
+  <div *ngIf="!c.items.length">El carrito está vacío.</div>
+  <table *ngIf="c.items.length" class="table">
+    <thead>
+      <tr>
+        <th>E-book</th>
+        <th>Precio</th>
+        <th>Cant.</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let it of c.items">
+        <td>{{ it.titulo }}</td>
+        <td>${{ it.price | number:'1.2-2' }}</td>
+        <td>
+          <button class="btn" (click)="dec(it)">−</button>
+          {{ it.quantity }}
+          <button class="btn" (click)="inc(it)">+</button>
+        </td>
+        <td>${{ (it.price * it.quantity) | number:'1.2-2' }}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" style="text-align:right">Subtotal</td>
+        <td>${{ c.subtotal | number:'1.2-2' }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="actions" *ngIf="c.items.length">
+    <button class="btn danger" (click)="clear()">Vaciar</button>
+    <button class="btn success" (click)="checkout()">Pagar (simulado)</button>
+  </div>
+</div>

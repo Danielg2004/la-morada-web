@@ -28,6 +28,9 @@ import { MisCitasComponent } from './pages/citas/mis-citas.component';
 // Perfil
 import { ProfileComponent } from './pages/profile/profile.component';
 
+// Carrito
+import { CartComponent } from './pages/cart/cart.component';
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
@@ -60,6 +63,9 @@ export const routes: Routes = [
 
   // Perfil
   { path: 'perfil', component: ProfileComponent },
+
+  // Carrito
+  { path: 'carrito', component: CartComponent },
 
   { path: '**', redirectTo: 'home' }
 ];

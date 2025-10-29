@@ -1,145 +1,217 @@
-import { Inject, Injectable, ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Pool } from 'pg';
-import { CreateEbookDto } from './dto/create-ebook.dto';
+
+export interface CreateEbookDto {
+  titulo: string;
+  imagen_url?: string | null;
+  archivo_url?: string | null;
+  descripcion?: string | null;
+  price?: number; // <- nuevo
+}
 
 @Injectable()
 export class EbooksService {
   constructor(@Inject('PG_POOL') private readonly pool: Pool) {}
 
-  // Crear (solo admin/psicologo)
-  async create(dto: CreateEbookDto, userId: string) {
+  // Listado con filtros básicos (q: búsqueda y favs del usuario autenticado)
+  async list(userId: string | null, q?: string) {
     try {
-      const q = `
-        INSERT INTO ebooks (titulo, imagen_url, archivo_url, descripcion, creado_por)
-        VALUES ($1,$2,$3,$4,$5)
-        RETURNING id, titulo, imagen_url, archivo_url, descripcion, creado_por, creado_en
-      `;
-      const { rows } = await this.pool.query(q, [
-        dto.titulo,
-        dto.imagen_url || null,
-        dto.archivo_url || null,
-        dto.descripcion || null,
-        userId,
-      ]);
-      return rows[0];
-    } catch (err) {
-      console.error('[EbooksService] create error:', err);
-      throw new InternalServerErrorException('No se pudo crear el e-book');
-    }
-  }
+      const params: any[] = [];
+      let where = '1=1';
+      if (q && q.trim()) {
+        params.push(`%${q.trim()}%`);
+        where += ` AND (LOWER(e.titulo) LIKE LOWER($${params.length}) OR LOWER(e.descripcion) LIKE LOWER($${params.length}))`;
+      }
 
-  // Listar + búsqueda + paginación opcional
-  async list(params: { q?: string; limit?: number; offset?: number; favoriteOf?: string | null }) {
-    const { q, limit = 20, offset = 0, favoriteOf } = params;
-    const values: any[] = [];
-    const where: string[] = [];
-    let idx = 1;
+      const favSelect = userId
+        ? `EXISTS(SELECT 1 FROM ebook_favoritos f WHERE f.user_id = $${params.push(userId)} AND f.ebook_id = e.id) AS es_favorito,`
+        : `false AS es_favorito,`;
 
-    if (q) {
-      where.push(`(LOWER(titulo) LIKE $${idx} OR LOWER(descripcion) LIKE $${idx})`);
-      values.push(`%${q.toLowerCase()}%`);
-      idx++;
-    }
-
-    let base = `
-      SELECT e.id, e.titulo, e.imagen_url, e.archivo_url, e.descripcion, e.creado_por, e.creado_en,
-             u.nombre AS autor_nombre
-        , CASE WHEN $${idx}::uuid IS NULL THEN false
-               ELSE EXISTS (SELECT 1 FROM ebook_favoritos f WHERE f.user_id = $${idx} AND f.ebook_id = e.id)
-          END AS es_favorito
-      FROM ebooks e
-      LEFT JOIN users u ON u.id = e.creado_por
-    `;
-    values.push(favoriteOf ?? null);
-    idx++;
-
-    if (favoriteOf) {
-      where.push(`EXISTS (SELECT 1 FROM ebook_favoritos f WHERE f.user_id = $${idx} AND f.ebook_id = e.id)`);
-      values.push(favoriteOf);
-      idx++;
-    }
-
-    if (where.length) base += ' WHERE ' + where.join(' AND ');
-    base += ` ORDER BY e.creado_en DESC LIMIT $${idx} OFFSET $${idx + 1}`;
-    values.push(limit, offset);
-
-    try {
-      const { rows } = await this.pool.query(base, values);
-      return rows;
-    } catch (err) {
-      console.error('[EbooksService] list error:', err);
-      throw new InternalServerErrorException('No se pudo listar e-books');
-    }
-  }
-
-  // Detalle
-  async detail(id: string, currentUserId?: string | null) {
-    try {
-      const { rows } = await this.pool.query(
-        `
-        SELECT e.id, e.titulo, e.imagen_url, e.archivo_url, e.descripcion, e.creado_por, e.creado_en,
-               u.nombre AS autor_nombre,
-               COALESCE(f.cnt, 0)::int AS favoritos_count,
-               CASE WHEN $2::uuid IS NULL THEN false
-                    ELSE EXISTS (SELECT 1 FROM ebook_favoritos ef WHERE ef.user_id = $2 AND ef.ebook_id = e.id)
-               END AS es_favorito
+      const sql = `
+        SELECT
+          e.id,
+          e.titulo,
+          e.imagen_url,
+          e.archivo_url,
+          e.descripcion,
+          e.price, -- <- nuevo
+          ${favSelect}
+          e.creado_en,
+          u.nombre AS autor_nombre,
+          u.apellidos AS autor_apellidos
         FROM ebooks e
         LEFT JOIN users u ON u.id = e.creado_por
-        LEFT JOIN (
-          SELECT ebook_id, COUNT(*)::int AS cnt
-          FROM ebook_favoritos
-          GROUP BY ebook_id
-        ) f ON f.ebook_id = e.id
-        WHERE e.id = $1
+        WHERE ${where}
+        ORDER BY e.creado_en DESC
+      `;
+      const { rows } = await this.pool.query(sql, params);
+      return rows;
+    } catch (e) {
+      console.error('[EbooksService] list', e);
+      throw new InternalServerErrorException('No se pudieron listar e-books');
+    }
+  }
+
+  async listMyFavorites(userId: string, q?: string) {
+    try {
+      const params: any[] = [userId];
+      let and = '';
+      if (q && q.trim()) {
+        params.push(`%${q.trim()}%`);
+        and = ` AND (LOWER(e.titulo) LIKE LOWER($${params.length}) OR LOWER(e.descripcion) LIKE LOWER($${params.length}))`;
+      }
+
+      const { rows } = await this.pool.query(
+        `
+        SELECT
+          e.id, e.titulo, e.imagen_url, e.archivo_url, e.descripcion, e.price,
+          true AS es_favorito,
+          e.creado_en
+        FROM ebook_favoritos f
+        JOIN ebooks e ON e.id = f.ebook_id
+        WHERE f.user_id = $1 ${and}
+        ORDER BY e.creado_en DESC
         `,
-        [id, currentUserId ?? null],
+        params,
       );
-      if (!rows[0]) throw new NotFoundException('E-book no encontrado');
-      return rows[0];
-    } catch (err) {
-      if (err?.status === 404) throw err;
-      console.error('[EbooksService] detail error:', err);
+      return rows;
+    } catch (e) {
+      console.error('[EbooksService] listMyFavorites', e);
+      throw new InternalServerErrorException('No se pudieron listar favoritos');
+    }
+  }
+
+  async detail(userId: string | null, id: string) {
+    try {
+      const params: any[] = [id];
+      const favSelect = userId
+        ? `EXISTS(SELECT 1 FROM ebook_favoritos f WHERE f.user_id = $${params.push(userId)} AND f.ebook_id = e.id) AS es_favorito,`
+        : `false AS es_favorito,`;
+      const { rows } = await this.pool.query(
+        `
+        SELECT
+          e.id, e.titulo, e.imagen_url, e.archivo_url, e.descripcion, e.price,
+          ${favSelect}
+          e.creado_en,
+          u.nombre AS autor_nombre,
+          u.apellidos AS autor_apellidos,
+          e.creado_por
+        FROM ebooks e
+        LEFT JOIN users u ON u.id = e.creado_por
+        WHERE e.id = $1
+        LIMIT 1
+        `,
+        params,
+      );
+      const ebook = rows[0];
+      if (!ebook) throw new NotFoundException('E-book no encontrado');
+      return ebook;
+    } catch (e) {
+      if (e?.status) throw e;
+      console.error('[EbooksService] detail', e);
       throw new InternalServerErrorException('No se pudo obtener el e-book');
     }
   }
 
-  // Eliminar (solo admin/psicologo). Si quieres, valida autor; por ahora por rol se controla en el controller.
-  async remove(id: string) {
+  // Nuevo: verificar acceso (compra) del usuario a un ebook
+  async hasAccess(userId: string, ebookId: string) {
     try {
-      const { rowCount } = await this.pool.query(`DELETE FROM ebooks WHERE id = $1`, [id]);
-      if (rowCount === 0) throw new NotFoundException('E-book no encontrado');
+      const q = await this.pool.query(
+        `SELECT 1 FROM ebook_purchases WHERE user_id = $1 AND ebook_id = $2 LIMIT 1`,
+        [userId, ebookId],
+      );
+      return q.rows.length > 0;
+    } catch (e) {
+      console.error('[EbooksService] hasAccess', e);
+      throw new InternalServerErrorException('No se pudo verificar acceso');
+    }
+  }
+
+  async create(creator: { id: string; rol: string }, dto: CreateEbookDto) {
+    if (!(creator.rol === 'admin' || creator.rol === 'psicologo')) {
+      throw new ForbiddenException('No autorizado para crear e-books');
+    }
+    if (!dto.titulo || !dto.titulo.trim()) {
+      throw new BadRequestException('El título es obligatorio');
+    }
+    const price = dto.price == null ? 0 : Number(dto.price);
+    if (Number.isNaN(price) || price < 0) {
+      throw new BadRequestException('Precio inválido');
+    }
+
+    try {
+      const { rows } = await this.pool.query(
+        `
+        INSERT INTO ebooks (titulo, imagen_url, archivo_url, descripcion, price, creado_por)
+        VALUES ($1,$2,$3,$4,$5,$6)
+        RETURNING id, titulo, imagen_url, archivo_url, descripcion, price, creado_en
+        `,
+        [
+          dto.titulo.trim(),
+          dto.imagen_url || null,
+          dto.archivo_url || null,
+          dto.descripcion || null,
+          price,
+          creator.id,
+        ],
+      );
+      return rows[0];
+    } catch (e) {
+      console.error('[EbooksService] create', e);
+      throw new InternalServerErrorException('No se pudo crear el e-book');
+    }
+  }
+
+  async remove(requester: { id: string; rol: string }, id: string) {
+    try {
+      // solo admin/psicólogo autor o admin global
+      const { rows } = await this.pool.query(
+        `SELECT creado_por FROM ebooks WHERE id = $1`,
+        [id],
+      );
+      const found = rows[0];
+      if (!found) throw new NotFoundException('E-book no encontrado');
+
+      if (!(requester.rol === 'admin' || found.creado_por === requester.id)) {
+        throw new ForbiddenException('No autorizado para eliminar');
+      }
+
+      await this.pool.query(`DELETE FROM ebooks WHERE id = $1`, [id]);
       return { ok: true };
-    } catch (err) {
-      if (err?.status === 404) throw err;
-      console.error('[EbooksService] remove error:', err);
+    } catch (e) {
+      if (e?.status) throw e;
+      console.error('[EbooksService] remove', e);
       throw new InternalServerErrorException('No se pudo eliminar el e-book');
     }
   }
 
-  // Favoritos
-  async addFavorite(ebookId: string, userId: string) {
+  async addFavorite(userId: string, ebookId: string) {
     try {
       await this.pool.query(
-        `INSERT INTO ebook_favoritos (user_id, ebook_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,
+        `
+        INSERT INTO ebook_favoritos (user_id, ebook_id)
+        VALUES ($1,$2)
+        ON CONFLICT (user_id, ebook_id) DO NOTHING
+        `,
         [userId, ebookId],
       );
       return { ok: true };
-    } catch (err) {
-      console.error('[EbooksService] addFavorite error:', err);
-      throw new InternalServerErrorException('No se pudo marcar favorito');
+    } catch (e) {
+      console.error('[EbooksService] addFavorite', e);
+      throw new InternalServerErrorException('No se pudo agregar a favoritos');
     }
   }
 
-  async removeFavorite(ebookId: string, userId: string) {
+  async removeFavorite(userId: string, ebookId: string) {
     try {
       await this.pool.query(
         `DELETE FROM ebook_favoritos WHERE user_id = $1 AND ebook_id = $2`,
         [userId, ebookId],
       );
       return { ok: true };
-    } catch (err) {
-      console.error('[EbooksService] removeFavorite error:', err);
-      throw new InternalServerErrorException('No se pudo quitar favorito');
+    } catch (e) {
+      console.error('[EbooksService] removeFavorite', e);
+      throw new InternalServerErrorException('No se pudo quitar de favoritos');
     }
   }
 }

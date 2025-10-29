@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { EbookService } from '../../services/ebook.service';
 import { AuthService } from '../../services/auth.service';
@@ -13,9 +13,11 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./ebook-admin.component.scss'],
 })
 export class EbookAdminComponent {
-  form!: FormGroup;
+  loading = false;
   serverError: string | null = null;
-  user: { userId: string; rol: string; nombre: string } | null = null;
+
+  // Declarar y luego inicializar en el constructor
+  form!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -23,28 +25,53 @@ export class EbookAdminComponent {
     private router: Router,
     private auth: AuthService
   ) {
-    // Inicializar AQUÍ para evitar "used before initialization"
     this.form = this.fb.group({
       titulo: ['', [Validators.required, Validators.maxLength(200)]],
       imagen_url: [''],
       archivo_url: [''],
       descripcion: ['', [Validators.maxLength(2000)]],
+      // precio como string en el form; convertimos al enviar
+      price: ['0', [Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
     });
-    this.user = this.auth.getUserFromToken();
   }
 
-  canCreate(): boolean {
-    return this.user?.rol === 'admin' || this.user?.rol === 'psicologo';
-  }
+  get f() { return this.form.controls; }
 
   submit() {
-    if (!this.canCreate()) { this.serverError = 'No autorizado.'; return; }
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.serverError = null;
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    this.loading = true;
 
-    this.ebooksSvc.create(this.form.value as any).subscribe({
-      next: (e) => this.router.navigate(['/ebooks', e.id]),
-      error: (err) => this.serverError = err?.error?.message || 'No se pudo crear el e-book.',
+    const raw = this.form.value as {
+      titulo: string;
+      imagen_url?: string | null;
+      archivo_url?: string | null;
+      descripcion?: string | null;
+      price?: string | number | null;
+    };
+
+    const priceNum =
+      raw.price === null || raw.price === undefined || raw.price === ''
+        ? 0
+        : Number(raw.price);
+
+    const payload = {
+      titulo: raw.titulo,
+      imagen_url: raw.imagen_url || null,
+      archivo_url: raw.archivo_url || null,
+      descripcion: raw.descripcion || null,
+      price: isNaN(priceNum) ? 0 : Math.max(0, priceNum),
+    };
+
+    this.ebooksSvc.create(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/ebooks']);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.serverError = err?.error?.message || 'No se pudo crear el e-book.';
+      }
     });
   }
 }

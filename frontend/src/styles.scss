@@ -64,3 +64,48 @@ a { color: var(--accent); text-decoration: none; }
 .grid { display: grid; gap: 12px; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 720px){ .grid-2 { grid-template-columns: 1fr; } }
+
+/* Textarea con el mismo estilo dark que los inputs */
+.form textarea {
+  background: #0e1117;
+  color: var(--text);
+  border: 1px solid #2a2f3a;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Placeholders tenues en ambos */
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #6b7280;
+}
+
+/* Evitar fondo claro del autofill (Chrome/Edge) */
+.form input:-webkit-autofill,
+.form textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0px 1000px #0e1117 inset;
+  box-shadow: 0 0 0px 1000px #0e1117 inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* Opcional: coherencia en number y selects */
+.form input[type="number"] {
+  -moz-appearance: textfield;
+}
+.form input[type="number"]::-webkit-outer-spin-button,
+.form input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form select {
+  background: #0e1117;
+  color: var(--text);
+  border: 1px solid #2a2f3a;
+  border-radius: 10px;
+  padding: 10px 12px;
+}

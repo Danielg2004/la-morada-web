@@ -1,10 +1,12 @@
 <header class="lm-header">
   <div class="container header-inner">
-    <a class="brand" routerLink="/home">
+    <!-- Marca -->
+    <a class="brand" routerLink="/home" aria-label="Ir al inicio">
       <span class="logo-dot"></span>
       <span class="brand-text">La Morada</span>
     </a>
 
+    <!-- Navegación -->
     <nav class="nav">
       <a routerLink="/home" routerLinkActive="active">Home</a>
       <a routerLink="/ebooks" routerLinkActive="active">E-books</a>
@@ -13,15 +15,22 @@
       <a *ngIf="isAdminOrPsy" routerLink="/ebooks/admin" routerLinkActive="active">Subir e-book</a>
       <a routerLink="/citas" routerLinkActive="active">Mis citas</a>
       <a *ngIf="isAdminOrPsy" routerLink="/disponibilidad" routerLinkActive="active">Mi disponibilidad</a>
-      <a *ngIf="user?.rol==='paciente'" routerLink="/citas/reservar" routerLinkActive="active">Reservar</a>
-
+      <a *ngIf="user?.rol === 'paciente'" routerLink="/citas/reservar" routerLinkActive="active">Reservar</a>
+      <a routerLink="/perfil" routerLinkActive="active">Mi perfil</a>
     </nav>
 
+    <!-- Sesión + Carrito (texto) -->
     <div class="session">
+      <!-- Carrito como texto -->
+      <a *ngIf="isLogged" class="cart-link" routerLink="/carrito">
+        Carrito<span *ngIf="cartCount > 0"> ({{ cartCount }})</span>
+      </a>
+
       <ng-container *ngIf="isLogged; else authLinks">
         <span class="whoami" title="Rol">{{ user?.nombre }} · {{ user?.rol }}</span>
         <button class="btn-outline" (click)="logout()">Cerrar sesión</button>
       </ng-container>
+
       <ng-template #authLinks>
         <a class="btn-outline" routerLink="/login">Iniciar sesión</a>
         <a class="btn" routerLink="/registro">Registrarse</a>

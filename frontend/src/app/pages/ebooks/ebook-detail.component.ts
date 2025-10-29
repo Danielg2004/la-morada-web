@@ -1,53 +1,57 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { EbookService } from '../../services/ebook.service';
 import { Ebook } from '../../models/ebook.model';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, CurrentUser } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ebook-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './ebook-detail.component.html',
   styleUrls: ['./ebook-detail.component.scss'],
 })
 export class EbookDetailComponent implements OnInit {
   ebook?: Ebook;
+  user: CurrentUser | null = null;
   loading = false;
-  user: { userId: string; rol: string; nombre: string } | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private ebooksSvc: EbookService,
-    private auth: AuthService
+    private svc: EbookService,
+    private auth: AuthService,
+    private router: Router
   ) {
-    this.user = this.auth.getUserFromToken(); // mover aquí
+    this.auth.currentUser$.subscribe((u) => (this.user = u));
   }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.loading = true;
-    this.ebooksSvc.detail(id).subscribe({
+    this.svc.detail(id).subscribe({
       next: (e) => { this.ebook = e; this.loading = false; },
       error: () => { this.loading = false; },
     });
   }
 
-  canDelete(): boolean {
+  canManage(): boolean {
     return this.user?.rol === 'admin' || this.user?.rol === 'psicologo';
   }
 
-  delete() {
-    if (!this.ebook) return;
-    if (!this.canDelete()) { alert('No autorizado'); return; }
-    if (!confirm('¿Eliminar este e-book?')) return;
-    this.ebooksSvc.remove(this.ebook.id).subscribe({
-      next: () => { history.back(); },
-    });
+  toggleFav(): void {
+    if (!this.user || !this.ebook) { alert('Inicia sesión para usar favoritos.'); return; }
+    const call = this.ebook.es_favorito
+      ? this.svc.removeFavorite(this.ebook.id)
+      : this.svc.addFavorite(this.ebook.id);
+    call.subscribe({ next: () => (this.ebook!.es_favorito = !this.ebook!.es_favorito) });
   }
 
-  openLink(url?: string) {
-    if (url) window.open(url, '_blank');
+  // ⬇️ Acepta string | null | undefined para que el template no marque error
+  openLink(url?: string | null): void {
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

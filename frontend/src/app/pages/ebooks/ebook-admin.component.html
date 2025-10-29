@@ -1,32 +1,55 @@
 <div class="container">
-  <div class="card">
+  <div class="card" style="max-width: 760px; margin: 24px auto;">
     <h2>Subir e-book</h2>
-    <p class="muted">Solo psicólogos o administradores.</p>
 
     <form class="form" [formGroup]="form" (ngSubmit)="submit()">
-      <div class="grid grid-2">
-        <div class="row">
-          <label>Título *</label>
-          <input formControlName="titulo" type="text" />
-          <small *ngIf="form.touched && form.controls['titulo'].errors?.['required']">Obligatorio</small>
-        </div>
-        <div class="row">
-          <label>Imagen (URL)</label>
-          <input formControlName="imagen_url" type="url" placeholder="https://..." />
-        </div>
-        <div class="row">
-          <label>Archivo (URL)</label>
-          <input formControlName="archivo_url" type="url" placeholder="https://..." />
-        </div>
-        <div class="row">
-          <label>Descripción</label>
-          <input formControlName="descripcion" type="text" />
-        </div>
+      <div class="row">
+        <label>Título *</label>
+        <input type="text" formControlName="titulo" />
+        <small *ngIf="f['titulo'].touched && f['titulo'].errors?.['required']">
+          El título es obligatorio.
+        </small>
+      </div>
+
+      <div class="row">
+        <label>URL de imagen (opcional)</label>
+        <input type="url" formControlName="imagen_url" placeholder="https://..." />
+      </div>
+
+      <div class="row">
+        <label>URL de archivo (opcional)</label>
+        <input type="url" formControlName="archivo_url" placeholder="https://..." />
+      </div>
+
+      <div class="row">
+        <label>Descripción (opcional)</label>
+        <textarea formControlName="descripcion" rows="4" placeholder="Descripción corta del e-book"></textarea>
+        <small *ngIf="f['descripcion'].touched && f['descripcion'].errors?.['maxlength']">
+          Máximo 2000 caracteres.
+        </small>
+      </div>
+
+      <!-- 👇 NUEVO: Precio -->
+      <div class="row">
+        <label>Precio</label>
+        <input
+          type="number"
+          formControlName="price"
+          min="0"
+          step="0.01"
+          placeholder="0.00" />
+        <small class="muted">Deja 0 para que sea Gratis.</small>
+        <small *ngIf="f['price'].touched && f['price'].errors?.['pattern']">
+          Formato inválido. Usa hasta 2 decimales (ej: 12.50).
+        </small>
       </div>
 
       <div class="server-error" *ngIf="serverError">{{ serverError }}</div>
-      <button class="btn" type="submit">Crear</button>
-      <a class="btn outline" routerLink="/ebooks">Volver</a>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn" type="submit" [disabled]="loading">Guardar</button>
+        <a class="btn outline" routerLink="/ebooks">Cancelar</a>
+      </div>
     </form>
   </div>
 </div>

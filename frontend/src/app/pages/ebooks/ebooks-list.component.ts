@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+
 import { EbookService } from '../../services/ebook.service';
+import { CartService } from '../../services/cart.service';
+import { AuthService, CurrentUser } from '../../services/auth.service';
 import { Ebook } from '../../models/ebook.model';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ebooks-list',
@@ -18,28 +20,44 @@ export class EbooksListComponent implements OnInit {
   loading = false;
   ebooks: Ebook[] = [];
   showOnlyFavorites = false;
-  user: { userId: string; rol: string; nombre: string } | null = null;
 
-  constructor(private ebooksSvc: EbookService, private auth: AuthService) {
-    this.user = this.auth.getUserFromToken(); // mover aquí
+  user: CurrentUser | null = null;
+
+  constructor(
+    private ebooksSvc: EbookService,
+    private cart: CartService,
+    private auth: AuthService,
+  ) {}
+
+  ngOnInit(): void {
+    // Mantener el usuario actualizado (login/logout reactivo)
+    this.auth.currentUser$.subscribe(u => this.user = u);
+    this.load();
   }
 
-  ngOnInit(): void { this.load(); }
-
-  load() {
+  load(): void {
     this.loading = true;
-    const obs = this.showOnlyFavorites
+
+    const source$ = this.showOnlyFavorites
       ? this.ebooksSvc.myFavorites(this.q)
       : this.ebooksSvc.list(this.q);
-    obs.subscribe({
-      next: (data) => { this.ebooks = data; this.loading = false; },
-      error: () => { this.loading = false; },
+
+    source$.subscribe({
+      next: rows => {
+        this.ebooks = rows;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      },
     });
   }
 
-  search() { this.load(); }
+  search(): void {
+    this.load();
+  }
 
-  toggleFavorites() {
+  toggleFavorites(): void {
     this.showOnlyFavorites = !this.showOnlyFavorites;
     this.load();
   }
@@ -48,19 +66,27 @@ export class EbooksListComponent implements OnInit {
     return this.user?.rol === 'admin' || this.user?.rol === 'psicologo';
   }
 
-  async share(ebook: Ebook) {
-    const url = `${location.origin}/ebooks/${ebook.id}`;
-    if ((navigator as any).share) {
-      try { await (navigator as any).share({ title: ebook.titulo, url }); } catch {}
-    } else {
-      await navigator.clipboard.writeText(url);
-      alert('Enlace copiado al portapapeles');
-    }
+  toggleFav(e: Ebook): void {
+    if (!this.user) { alert('Inicia sesión para usar favoritos.'); return; }
+    const call = e.es_favorito
+      ? this.ebooksSvc.removeFavorite(e.id)
+      : this.ebooksSvc.addFavorite(e.id);
+
+    call.subscribe({
+      next: () => e.es_favorito = !e.es_favorito,
+    });
   }
 
-  toggleFav(ebook: Ebook) {
-    if (!this.user) { alert('Inicia sesión para usar favoritos.'); return; }
-    const call = ebook.es_favorito ? this.ebooksSvc.removeFavorite(ebook.id) : this.ebooksSvc.addFavorite(ebook.id);
-    call.subscribe({ next: () => { ebook.es_favorito = !ebook.es_favorito; } });
+  addToCart(e: Ebook): void {
+    if (!this.user) { alert('Inicia sesión para comprar.'); return; }
+    this.cart.add(e.id, 1).subscribe({
+      next: () => alert('Agregado al carrito'),
+      error: () => alert('No se pudo agregar'),
+    });
+  }
+
+  // Helpers de UI
+  isFree(e: Ebook): boolean {
+    return Number(e.price) === 0;
   }
 }
