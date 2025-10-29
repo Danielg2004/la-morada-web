@@ -6,6 +6,15 @@ import { EbooksListComponent } from './pages/ebooks/ebooks-list.component';
 import { EbookDetailComponent } from './pages/ebooks/ebook-detail.component';
 import { EbookAdminComponent } from './pages/ebooks/ebook-admin.component';
 
+// Blog
+import { BlogListComponent } from './pages/blog/blog-list.component';
+import { BlogAdminComponent } from './pages/blog/blog-admin.component';
+import { BlogDetailComponent } from './pages/blog/blog-detail.component';
+
+// Notas privadas
+import { NotesListComponent } from './pages/notes/notes-list.component';
+import { NoteEditComponent } from './pages/notes/note-edit.component';
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
@@ -14,6 +23,15 @@ export const routes: Routes = [
 
   // E-books
   { path: 'ebooks', component: EbooksListComponent },
-  { path: 'ebooks/admin', component: EbookAdminComponent }, // el backend valida rol
+  { path: 'ebooks/admin', component: EbookAdminComponent },
   { path: 'ebooks/:id', component: EbookDetailComponent },
+
+  // Blog
+  { path: 'blog', component: BlogListComponent },
+  { path: 'blog/admin', component: BlogAdminComponent },
+  { path: 'blog/:id', component: BlogDetailComponent },
+
+  // Notas privadas
+  { path: 'notas', component: NotesListComponent },
+  { path: 'notas/:id', component: NoteEditComponent },
 ];

@@ -1,0 +1,20 @@
+<div class="container">
+  <div class="card">
+    <h2>Editar nota</h2>
+    <div *ngIf="loading">Cargando...</div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="row">
+        <label>Título *</label>
+        <input formControlName="titulo" type="text" />
+      </div>
+      <div class="row">
+        <label>Contenido *</label>
+        <textarea formControlName="contenido" rows="10"></textarea>
+      </div>
+      <div class="server-error" *ngIf="serverError">{{ serverError }}</div>
+      <button class="btn" type="submit">Guardar</button>
+      <a class="btn outline" routerLink="/notas">Volver</a>
+    </form>
+  </div>
+</div>

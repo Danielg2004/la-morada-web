@@ -1,0 +1,8 @@
+.header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;
+  .actions { display:flex; gap:8px; align-items:center; }
+  input { width:320px; background:#0e1117; color:#e8eef6; border:1px solid #2a2f3a; border-radius:10px; padding:10px 12px; }
+}
+.list { display:grid; gap:12px; }
+.post { display:block; padding:12px; border:1px solid rgba(255,255,255,.06); border-radius:12px; background:var(--card); color:#e8eef6; text-decoration:none; }
+.meta{ color:#9fb0c3; font-size:.85rem; margin:6px 0 8px; }
+.excerpt { color:#c7d4e4; }

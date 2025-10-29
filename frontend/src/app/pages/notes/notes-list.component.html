@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="card">
+    <h2>Mi diario privado</h2>
+
+    <div class="header">
+      <input [(ngModel)]="q" (keyup.enter)="search()" placeholder="Buscar en mis notas..." />
+      <button class="btn" (click)="search()">Buscar</button>
+    </div>
+
+    <form class="form new-note" [formGroup]="form" (ngSubmit)="create()">
+      <div class="row">
+        <label>Título *</label>
+        <input formControlName="titulo" type="text" />
+      </div>
+      <div class="row">
+        <label>Contenido *</label>
+        <textarea formControlName="contenido" rows="6"></textarea>
+      </div>
+      <button class="btn" type="submit">Guardar nota</button>
+    </form>
+
+    <div *ngIf="loading">Cargando...</div>
+
+    <div class="list">
+      <div class="note" *ngFor="let n of notes">
+        <h3>{{ n.titulo }}</h3>
+        <div class="muted">{{ n.actualizado_en || n.creado_en | date:'short' }}</div>
+        <p class="excerpt">
+          {{ (n.contenido || '') | slice:0:200 }}{{ ((n.contenido || '').length > 200) ? '…' : '' }}
+        </p>
+        <div class="actions">
+          <a class="btn outline" [routerLink]="['/notas', n.id]">Abrir</a>
+          <button class="btn danger" (click)="remove(n)">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

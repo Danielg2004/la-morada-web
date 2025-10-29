@@ -1,0 +1,12 @@
+<div class="container" *ngIf="post">
+  <div class="card">
+    <h2>{{ post.titulo }}</h2>
+    <div class="muted">por {{ post.autor_nombre || '—' }} · {{ post.creado_en | date:'medium' }}</div>
+    <div class="content">{{ post.contenido }}</div>
+
+    <div class="actions">
+      <a class="btn outline" routerLink="/blog">Volver</a>
+      <button class="btn danger" *ngIf="canDelete()" (click)="remove()">Eliminar</button>
+    </div>
+  </div>
+</div>

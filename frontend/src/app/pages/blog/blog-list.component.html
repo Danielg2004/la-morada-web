@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <h2>Blog</h2>
+      <div class="actions">
+        <input [(ngModel)]="q" (keyup.enter)="search()" placeholder="Buscar por título o contenido..." />
+        <button class="btn" (click)="search()">Buscar</button>
+        <a *ngIf="canCreate()" class="btn" routerLink="/blog/admin">Nueva entrada</a>
+      </div>
+    </div>
+
+    <div *ngIf="loading">Cargando...</div>
+
+    <div class="list">
+      <a class="post" *ngFor="let p of posts" [routerLink]="['/blog', p.id]">
+        <h3>{{ p.titulo }}</h3>
+        <div class="meta">por {{ p.autor_nombre || '—' }} · {{ p.creado_en | date:'medium' }}</div>
+        <p class="excerpt">
+          {{ (p.contenido || '') | slice:0:180 }}{{ ((p.contenido || '').length > 180) ? '…' : '' }}
+        </p>
+      </a>
+    </div>
+  </div>
+</div>

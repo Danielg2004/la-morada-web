@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="card">
+    <h2>Nueva entrada</h2>
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="row">
+        <label>Título *</label>
+        <input formControlName="titulo" type="text" />
+      </div>
+      <div class="row">
+        <label>Contenido *</label>
+        <textarea formControlName="contenido" rows="10"></textarea>
+      </div>
+      <div class="server-error" *ngIf="serverError">{{ serverError }}</div>
+      <button class="btn" type="submit">Publicar</button>
+      <a class="btn outline" routerLink="/blog">Volver</a>
+    </form>
+  </div>
+</div>
